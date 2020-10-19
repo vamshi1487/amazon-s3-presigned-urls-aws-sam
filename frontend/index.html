@@ -10,13 +10,13 @@
       <h1>S3 Uploader Test</h1>
   
       <div v-if="!image">
-        <h2>Select an image</h2>
+        <h2>Select file to upload</h2>
         <input type="file" @change="onFileChange">
       </div>
       <div v-else>
         <img :src="image" />
-        <button v-if="!uploadURL" @click="removeImage">Remove image</button>
-        <button v-if="!uploadURL" @click="uploadImage">Upload image</button>
+        <button v-if="!uploadURL" @click="removeImage">Remove excel</button>
+        <button v-if="!uploadURL" @click="uploadImage">Upload excel</button>
       </div>
       <h2 v-if="uploadURL">Success! Image uploaded to bucket.</h2>
     </div>
@@ -44,12 +44,12 @@
             // var image = new Image()
             let reader = new FileReader()
             reader.onload = (e) => {
-              console.log('length: ', e.target.result.includes('data:data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;'))
-              if (!e.target.result.includes('data:data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;')) {
-                return alert('Wrong file type - JPG only.')
+              console.log('length: ', e.target.result.includes('data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'))
+              if (!e.target.result.includes('data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+                return alert('Wrong file type - excel only.')
               }
               if (e.target.result.length > MAX_IMAGE_SIZE) {
-                return alert('Image is loo large.')
+                return alert('excel is loo large.')
               }
               this.image = e.target.result
             }
@@ -73,7 +73,7 @@
             for (var i = 0; i < binary.length; i++) {
               array.push(binary.charCodeAt(i))
             }
-            let blobData = new Blob([new Uint8Array(array)], {type: 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;'})
+            let blobData = new Blob([new Uint8Array(array)], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
             console.log('Uploading to: ', response.uploadURL)
             const result = await fetch(response.uploadURL, {
               method: 'PUT',
