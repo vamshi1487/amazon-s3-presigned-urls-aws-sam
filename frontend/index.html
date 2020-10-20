@@ -24,11 +24,12 @@
     <script>
       const MAX_IMAGE_SIZE = 1000000
 
-      /* ENTER YOUR ENDPOINT HERE */
+/* ENTER YOUR ENDPOINT HERE
+   FILES UPLOADED TO MY ENDPOINT ARE AUTOMATICALLY DELETED EVERY FEW HOURS */
 
-      const API_ENDPOINT = 'https://btu4zpwecj.execute-api.us-east-1.amazonaws.com/default/getpresignedurl' // e.g. https://ab1234ab123.execute-api.us-east-1.amazonaws.com/uploads
+const API_ENDPOINT = 'https://btu4zpwecj.execute-api.us-east-1.amazonaws.com/default/getpresignedurl'
 
-      new Vue({
+new Vue({
   el: "#app",
   data: {
     image: '',
@@ -78,6 +79,7 @@
     }
   }
 })
+
     </script>
     <style type="text/css">
       body {
