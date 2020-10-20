@@ -18,7 +18,7 @@
         <button v-if="!uploadURL" @click="removeImage">Remove excel</button>
         <button v-if="!uploadURL" @click="uploadImage">Upload excel</button>
       </div>
-      <h2 v-if="uploadURL">Success! Image uploaded to bucket.</h2>
+      <h2 v-if="uploadURL">Success! excel uploaded to bucket.</h2>
     </div>
   
     <script>
@@ -29,62 +29,55 @@
       const API_ENDPOINT = 'https://btu4zpwecj.execute-api.us-east-1.amazonaws.com/default/getpresignedurl' // e.g. https://ab1234ab123.execute-api.us-east-1.amazonaws.com/uploads
 
       new Vue({
-        el: "#app",
-        data: {
-          image: '',
-          uploadURL: ''
-        },
-        methods: {
-          onFileChange (e) {
-            let files = e.target.files || e.dataTransfer.files
-            if (!files.length) return
-            this.createImage(files[0])
-          },
-          createImage (file) {
-            // var image = new Image()
-            let reader = new FileReader()
-            reader.onload = (e) => {
-              console.log('length: ', e.target.result.includes('data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'))
-              if (!e.target.result.includes('data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
-                return alert('Wrong file type - excel only.')
-              }
-              if (e.target.result.length > MAX_IMAGE_SIZE) {
-                return alert('excel is loo large.')
-              }
-              this.image = e.target.result
-            }
-            reader.readAsDataURL(file)
-          },
-          removeImage: function (e) {
-            console.log('Remove clicked')
-            this.image = ''
-          },
-          uploadImage: async function (e) {
-            console.log('Upload clicked')
-            // Get the presigned URL
-            const response = await axios({
-              method: 'GET',
-              url: API_ENDPOINT
-            })
-            console.log('Response: ', response)
-            console.log('Uploading: ', this.image)
-            let binary = atob(this.image.split(',')[1])
-            let array = []
-            for (var i = 0; i < binary.length; i++) {
-              array.push(binary.charCodeAt(i))
-            }
-            let blobData = new Blob([new Uint8Array(array)], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
-            console.log('Uploading to: ', response.uploadURL)
-            const result = await fetch(response.uploadURL, {
-              method: 'PUT',
-              body: blobData
-            })
-            console.log('Result: ', result)
-            // Final URL for the user doesn't need the query string params
-            this.uploadURL = response.uploadURL.split('?')[0]
-          }
-        }
+  el: "#app",
+  data: {
+    image: '',
+    uploadURL: ''
+  },
+  methods: {
+    onFileChange (e) {
+      let files = e.target.files || e.dataTransfer.files
+      if (!files.length) return
+      this.createImage(files[0])
+    },
+    createImage (file) {
+      // var image = new Image()
+      let reader = new FileReader()
+      reader.onload = (e) => {
+        this.image = e.target.result
+      }
+      reader.readAsDataURL(file)
+    },
+    removeImage: function (e) {
+      console.log('Remove clicked')
+      this.image = ''
+    },
+    uploadImage: async function (e) {
+      console.log('Upload clicked')
+      // Get the presigned URL
+      const response = await axios({
+        method: 'GET',
+        url: API_ENDPOINT
       })
+      console.log('Response: ', response.data)
+      console.log('Uploading: ', this.image)
+      let binary = atob(this.image.split(',')[1])
+      let array = []
+      for (var i = 0; i < binary.length; i++) {
+        array.push(binary.charCodeAt(i))
+      }
+      let blobData = new Blob([new Uint8Array(array)], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})
+      console.log('Uploading to: ', response.data.uploadURL)
+      const result = await fetch(response.data.uploadURL, {
+        method: 'PUT',
+        body: blobData
+      })
+      console.log('Result: ', result)
+      // Final URL for the user doesn't need the query string params
+      this.uploadURL = response.data.uploadURL.split('?')[0]
+    }
+  }
+})
     </script>
     <style type="text/css">
       body {
